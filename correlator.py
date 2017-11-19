@@ -1,8 +1,18 @@
+"""The correlator (between work being done and work being Toggl'ed)
+
+Usage:
+  correlator.py <user_name> <start_date> <end_date>
+  correlator.py (-h | --help)
+
+"""
+
 import datetime
 from dateutil import parser
 import json
 import pprint
 import time
+
+from docopt import docopt
 
 from config import USERS
 from slack_utils import get_slack_users, load_slack_channels_archive, get_user_messages
@@ -39,6 +49,7 @@ def print_non_toggled_messages(user, start_date, end_date):
             )
 
 if __name__ == '__main__':
-    start_friday = time.mktime(parser.parse('2017-11-17 00:00:00').timetuple())
-    end_friday = time.mktime(parser.parse('2017-11-17 23:59:59').timetuple())
-    print_non_toggled_messages('rtut', start_friday, end_friday)
+    arguments = docopt(__doc__, version='Correlator 0.1')
+    start_timestamp = time.mktime(parser.parse(arguments['<start_date>'] + ' 00:00:00').timetuple())
+    end_timestamp = time.mktime(parser.parse(arguments['<end_date>'] + ' 23:59:59').timetuple())
+    print_non_toggled_messages(arguments['<user_name>'], start_timestamp, end_timestamp)
