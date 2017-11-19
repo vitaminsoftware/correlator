@@ -17,8 +17,16 @@ def load_toggl_archive():
             reader = csv.DictReader(f)
             for row in reader:
                 row_copy = copy.deepcopy(row)
-                start_ts = time.mktime(parser.parse(row['Start date'] + ' ' + row['Start time']).timetuple())
-                end_ts = time.mktime(parser.parse(row['End date'] + ' ' + row['End time']).timetuple())
+                try:
+                    start_ts = time.mktime(parser.parse(row['Start date'] + ' ' + row['Start time']).timetuple())
+                except ValueError:
+                    print('%s %s cannot be parsed as start time for activtiy: %r' % (row['Start date'], row['Start time'], row))
+
+                try:
+                    end_ts = time.mktime(parser.parse(row['End date'] + ' ' + row['End time']).timetuple())
+                except ValueError:
+                    print('%s %s cannot be parsed as end time for activtiy: %r' % (row['End date'], row['End time'], row))
+
                 row_copy['_start_ts_'] = start_ts
                 row_copy['_end_ts_'] = end_ts
                 result += [row_copy]
